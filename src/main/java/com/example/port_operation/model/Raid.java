@@ -6,21 +6,28 @@ import lombok.Data;
 
 @Data
 public class Raid {
+
     private int raidCapacity;
     private List<Ship>shipList = new CopyOnWriteArrayList<>();
+    private static volatile Raid instance;
 
-    public Raid(int raidCapacity) {
+    public static Raid getInstance(int raidCapacity){
+        if (instance == null) {
+            instance = new Raid(raidCapacity);
+        }
+        return instance;
+    }
+
+    private Raid(int raidCapacity) {
         this.raidCapacity = raidCapacity;
     }
-    //свободен рейд
-    public boolean isFreeRaid(){
-       return shipList.size() < 10;
-    }
+
 
     // прием кораблей на рейд
-    public void addShipByRaid(Ship ship){
+    public boolean addShipByRaid(Ship ship){
         System.out.printf("Корабль %s встал на рейд.%n", ship);
         shipList.add(ship);
+        return false;
     }
     public List<Ship> getShipList() {
         return shipList;

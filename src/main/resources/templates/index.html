@@ -1,10 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <title>Port Operation</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/index.css" th:href="@{/css/index.css}"/>
 </head>
 <body>
-<H1>Hello</H1>
+<h1>Операции в Порту</h1>
+<div class="raid" style="width: 500px;">
+    <table class="table caption-top" id="raid-process">
+        <caption><h3>Корабли стоящие на рейде</h3>></caption>
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Тип груза</th>
+            <th scope="col">Объем груза</th>
+        </tr>
+        </thead>
+        <tbody id="tbodyShip"></tbody>
+    </table>
+</div>
+<div class="berth" style="width: 1000px;">
+    <table class="table caption-top" id="berth-process">
+        <caption><h3>Причал</h3></caption>
+        <thead>
+        <tr>
+            <th scope="col">Тип Причала</th>
+            <th scope="col">ID Корабля</th>
+            <th scope="col">Тип груза</th>
+            <th scope="col">Объем груза</th>
+            <th scope="col">Процесс выгрузки груза</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th scope="col">Причал для Легких грузов</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        <tr>
+            <th scope="col">Причал для Средних грузов</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        <tr>
+            <th scope="col">Причал для Тяжелых грузов</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+    <button class="btn btn-primary btn-sm" type="submit">Запуск</button>
+    <button class="btn btn-secondary btn-sm" type="submit">Остановить</button>
+    <br><br>
+    <a class="btn btn-primary" href="/report" role="button">Вывести Отчет</a>
+    <br><br>
+    <a class="btn btn-primary" href="/settings" role="button">Настроить процессы Порта</a>
+</div>
+
+
+
+<script src="../static/js/main_page.js" th:src="@{/js/index.js}"></script>
 </body>
 </html>
