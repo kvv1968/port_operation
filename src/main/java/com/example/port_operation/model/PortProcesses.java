@@ -3,7 +3,7 @@ package com.example.port_operation.model;
 public class PortProcesses {
     private Berth[] berths ;
     private Raid raid;
-    private static int raidCapacity = 10;
+    private  int raidCapacity = 10;
 
     public PortProcesses() {
         this.berths = new Berth[]{
