@@ -7,11 +7,11 @@ public class PortProcesses {
 
     public PortProcesses() {
         this.berths = new Berth[]{
-                new Berth(TypeCargo.LIGHT),
-                new Berth(TypeCargo.HEAVY),
-                new Berth(TypeCargo.MEDIUM)
+//                new Berth(TypeCargo.LIGHT),
+//                new Berth(TypeCargo.HEAVY),
+//                new Berth(TypeCargo.MEDIUM)
         };
-        this.raid = new Raid(raidCapacity);
+        this.raid = Raid.getInstance(0);
     }
 
     //выгрузка груза на причале
