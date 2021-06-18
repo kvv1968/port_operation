@@ -2,12 +2,17 @@ package com.example.port_operation.model;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import lombok.Data;
 
 @Data
 public class Raid {
+
     private int raidCapacity;
     private List<Ship>shipList = new CopyOnWriteArrayList<>();
+
 
     public Raid(int raidCapacity) {
         this.raidCapacity = raidCapacity;
