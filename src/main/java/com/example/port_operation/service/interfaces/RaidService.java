@@ -1,8 +1,9 @@
 package com.example.port_operation.service.interfaces;
 
-import com.example.port_operation.model.Ship;
+import com.example.port_operation.model.Raid;
 
 public interface RaidService {
-    boolean isFreeRaid(int capacity);
-    boolean addShipByRaid(Ship ship);
+    boolean isFreeRaid();
+    void addShipByRaid();
+    Raid getRaid();
 }

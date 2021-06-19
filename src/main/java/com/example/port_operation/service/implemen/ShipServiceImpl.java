@@ -8,17 +8,25 @@ import com.example.port_operation.service.interfaces.RaidService;
 import com.example.port_operation.service.interfaces.ShipService;
 import java.util.List;
 import java.util.Random;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
-@AllArgsConstructor
 public class ShipServiceImpl implements ShipService {
 
     private ShipRepository shipRepository;
     private TypeCargoRepository cargoRepository;
     private RaidService raidService;
+
+    @Autowired
+    public ShipServiceImpl(ShipRepository shipRepository,
+                           TypeCargoRepository cargoRepository,
+                           RaidService raidService) {
+        this.shipRepository = shipRepository;
+        this.cargoRepository = cargoRepository;
+        this.raidService = raidService;
+    }
 
     @Override
     public List<Ship> getAllShipsRaid() {
@@ -26,8 +34,8 @@ public class ShipServiceImpl implements ShipService {
     }
 
     @Override
-    public boolean addShip(int capacity) {
-        if (raidService.isFreeRaid(capacity)){
+    public boolean addShipRepo() {
+        if (raidService.isFreeRaid()){
             shipRepository.save(shipGeneration());
             return true;
         }
