@@ -2,9 +2,9 @@ package com.example.port_operation.model;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class Raid {
 
     private int raidCapacity;
@@ -22,15 +22,10 @@ public class Raid {
         this.raidCapacity = raidCapacity;
     }
 
-
-    // прием кораблей на рейд
-    public boolean addShipByRaid(Ship ship){
-        System.out.printf("Корабль %s встал на рейд.%n", ship);
-        shipList.add(ship);
-        return false;
+    public void setShipList(List<Ship> shipList) {
+        this.shipList.addAll(shipList);
     }
-    public List<Ship> getShipList() {
-        return shipList;
+    public void removeRaid(Ship ship){
+        shipList.remove(ship);
     }
-
 }
