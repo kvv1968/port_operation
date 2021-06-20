@@ -1,14 +1,14 @@
 package com.example.port_operation.model;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import lombok.Getter;
+import java.util.Arrays;
+import java.util.Iterator;
+import lombok.Data;
 
-@Getter
+@Data
 public class Raid {
 
     private int raidCapacity;
-    private List<Ship>shipList = new CopyOnWriteArrayList<>();
+    private Ship[]ships = new Ship[raidCapacity];
     private static volatile Raid instance;
 
     public static Raid getInstance(int raidCapacity){
@@ -22,10 +22,16 @@ public class Raid {
         this.raidCapacity = raidCapacity;
     }
 
-    public void setShipList(List<Ship> shipList) {
-        this.shipList.addAll(shipList);
-    }
+
     public void removeRaid(Ship ship){
-        shipList.remove(ship);
+        Iterator<Ship>iterator = Arrays.stream(ships).iterator();
+        while (iterator.hasNext()){
+            Ship ship1 = iterator.next();
+            if (ship.equals(ship1)){
+                iterator.remove();
+            }
+        }
     }
+
+
 }

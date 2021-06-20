@@ -4,6 +4,6 @@ import com.example.port_operation.model.Raid;
 
 public interface RaidService {
     boolean isFreeRaid();
-    void addShipByRaid();
+    void addShipByRaid(int raidCapacity);
     Raid getRaid();
 }

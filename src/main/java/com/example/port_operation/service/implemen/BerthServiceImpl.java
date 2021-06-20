@@ -14,21 +14,35 @@ import org.springframework.stereotype.Service;
 public class BerthServiceImpl implements BerthService {
 
     private RaidService raidService;
-    private int unloadingSpeed;
+    private Berth berth;
+    private Raid raid;
 
     @Autowired
-    public BerthServiceImpl(RaidService raidService, int unloading) {
+    public BerthServiceImpl(RaidService raidService) {
         this.raidService = raidService;
-        this.unloadingSpeed = unloading;
     }
 
     @Override
-    public void unloadingBerth(Ship ship) {
-        Raid raid = raidService.getRaid();
-        raid.removeRaid(ship);
+    public void unloadingBerth(Ship ship, int unloadingSpeed) {
+        deleteShipDyRaid(ship);
+        berth.setShip(ship);
         int amountCargo = ship.getAmountCargo();
         while (amountCargo > 0){
             amountCargo -= unloadingSpeed;
         }
+        berth.setShip(null);
     }
+
+    @Override
+    public boolean berthIsFree(Ship ship) {
+
+        return false;
+    }
+
+    private void deleteShipDyRaid(Ship ship){
+        raid = raidService.getRaid();
+        raid.removeRaid(ship);
+    }
+
+
 }

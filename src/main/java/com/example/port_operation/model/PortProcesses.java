@@ -23,7 +23,7 @@ public class PortProcesses {
 
                 System.out.println("Тип груза совпадает, причал свободный");
                 System.out.printf("Удаляем корабль %s с рейда%n", ship);
-                raid.getShipList().remove(ship);
+
                 berth = ber;
                 berth.setShip(ship);
 //                berth.unloadingBerth();

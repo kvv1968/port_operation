@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface ShipService {
     List<Ship> getAllShipsRaid ();
-    boolean addShipRepo();
+    void addShipRepo(int caparasity);
     void deleteShip (Ship ship);
 }
