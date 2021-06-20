@@ -8,24 +8,22 @@ import com.example.port_operation.service.interfaces.RaidService;
 import com.example.port_operation.service.interfaces.ShipService;
 import java.util.List;
 import java.util.Random;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@AllArgsConstructor
 public class ShipServiceImpl implements ShipService {
 
     private ShipRepository shipRepository;
     private TypeCargoRepository cargoRepository;
     private RaidService raidService;
+    private int numberCargoTypes;
 
     @Autowired
-    public ShipServiceImpl(ShipRepository shipRepository,
-                           TypeCargoRepository cargoRepository,
-                           RaidService raidService) {
-        this.shipRepository = shipRepository;
-        this.cargoRepository = cargoRepository;
-        this.raidService = raidService;
+    public ShipServiceImpl(){
     }
 
     @Override
@@ -34,12 +32,12 @@ public class ShipServiceImpl implements ShipService {
     }
 
     @Override
-    public boolean addShipRepo() {
-        if (raidService.isFreeRaid()){
+    public void addShipRepo(int caparasity) {
+        int index = caparasity;
+        while (index > 0){
             shipRepository.save(shipGeneration());
-            return true;
+            index--;
         }
-        return false;
     }
 
     @Override
@@ -49,7 +47,7 @@ public class ShipServiceImpl implements ShipService {
 
     private Ship  shipGeneration(){
         Random random = new Random();
-        TypeCargo typeCargo = cargoRepository.getTypeCargoById(random.nextInt(3));
+        TypeCargo typeCargo = cargoRepository.getTypeCargoById(random.nextInt(numberCargoTypes));
         int amount = random.nextInt(Integer.MAX_VALUE);
         return new Ship(typeCargo, amount);
     }

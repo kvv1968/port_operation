@@ -3,5 +3,6 @@ package com.example.port_operation.service.interfaces;
 import com.example.port_operation.model.Ship;
 
 public interface BerthService {
-    void unloadingBerth(Ship ship);
+    void unloadingBerth(Ship ship, int unloadingSpeed);
+    boolean berthIsFree(Ship ship);
 }
