@@ -1,5 +1,6 @@
 package com.example.port_operation.model;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -28,5 +29,22 @@ public class TypeCargo {
     }
 
     public TypeCargo() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TypeCargo typeCargo = (TypeCargo) o;
+        return id == typeCargo.id && Objects.equals(type, typeCargo.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type);
     }
 }

@@ -1,10 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Settings</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+
 </head>
 <body>
-<H1>Настроить процессы Порта</H1>
+<H1>Настройка процессов Порта</H1>
+<h2 id="msg" th:text="${msg}" style=" background-color:tomato;"></h2>
+
+<div class="wrapper">
+    <form method="get" class="bg-body" name="setting" action="/settings/param" >
+        <div class="wrapper-caparacity">
+            <h5>Введите данные(число) - вместимость кораблей на рейде порта</h5>
+            <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label class="col-form-label">Количество кораблей на рейде</label>
+                </div>
+                <div class="col-auto">
+                    <input type="text" name="raidCapacity" required/>
+                </div>
+                <div class="col-auto">
+    <span class="form-text">
+      Любое число
+    </span>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <div class="wrapper-unloading-speed-berth">
+            <h5>Введите данные(число) - скорость выгрузки на причале любое положительное число от 1</h5>
+            <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label class="col-form-label">скорость выгрузки</label>
+                </div>
+                <div class="col-auto">
+                    <input type="text" name="unloadingSpeed" required/>
+                </div>
+                <div class="col-auto">
+    <span class="form-text">
+      Любое число
+    </span>
+                </div>
+            </div>
+        </div><br><br>
+<!--        <div class="wrapper-number-cargo-types">-->
+<!--            <h5>Введите данные - типы груза через запятую</h5>-->
+<!--            <div class="row g-3 align-items-center">-->
+<!--                <div class="col-auto">-->
+<!--                    <label class="col-form-label">Тип груза через запятую</label>-->
+<!--                </div>-->
+<!--                <div class="col-auto">-->
+<!--                    <textarea class="form-control" rows="3" name="typeCargos" required></textarea>-->
+<!--                </div>-->
+<!--                <div class="col-auto">-->
+<!--    <span class="form-text">-->
+<!--      типы груза-->
+<!--    </span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div><br><br>-->
+        <div>
+            <button class="btn btn-primary btn-sm" type="submit">Отправить</button>
+        </div>
+    </form><br>
+
+</div>
+<script src="../static/js/settings.js" th:src="@{/js/settings.js}"></script>
 </body>
 </html>

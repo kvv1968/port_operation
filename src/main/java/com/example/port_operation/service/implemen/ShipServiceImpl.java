@@ -4,53 +4,57 @@ import com.example.port_operation.model.Ship;
 import com.example.port_operation.model.TypeCargo;
 import com.example.port_operation.repository.interfaces.ShipRepository;
 import com.example.port_operation.repository.interfaces.TypeCargoRepository;
-import com.example.port_operation.service.interfaces.RaidService;
 import com.example.port_operation.service.interfaces.ShipService;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Data
+@Transactional
 public class ShipServiceImpl implements ShipService {
 
     private ShipRepository shipRepository;
     private TypeCargoRepository cargoRepository;
-    private RaidService raidService;
 
-    @Autowired
     public ShipServiceImpl(ShipRepository shipRepository,
-                           TypeCargoRepository cargoRepository,
-                           RaidService raidService) {
+                           TypeCargoRepository cargoRepository) {
         this.shipRepository = shipRepository;
         this.cargoRepository = cargoRepository;
-        this.raidService = raidService;
+        this.saveTypeCargoRepo();
     }
 
     @Override
-    public List<Ship> getAllShipsRaid() {
+    public List<Ship> getAllShipsRepo() {
         return shipRepository.findAll();
     }
 
-    @Override
-    public boolean addShipRepo() {
-        if (raidService.isFreeRaid()){
-            shipRepository.save(shipGeneration());
-            return true;
-        }
-        return false;
-    }
 
     @Override
-    public void deleteShip(Ship ship) {
+    public void deleteShipRepo(Ship ship) {
         shipRepository.delete(ship);
     }
 
-    private Ship  shipGeneration(){
-        Random random = new Random();
-        TypeCargo typeCargo = cargoRepository.getTypeCargoById(random.nextInt(3));
-        int amount = random.nextInt(Integer.MAX_VALUE);
-        return new Ship(typeCargo, amount);
+    @Override
+    public Ship updateShip(Ship ship) {
+       return shipRepository.saveAndFlush(ship);
     }
+
+
+    public  void saveTypeCargoRepo() {
+        cargoRepository.saveAllAndFlush(Arrays.asList(new TypeCargo(1, "Легкий груз"),
+                new TypeCargo(2, "Средний груз"), new TypeCargo(3, "Тяжелый груз")));
+    }
+
+    public Ship  shipGeneration(){
+        Random random = new Random();
+        TypeCargo typeCargo = cargoRepository.findTypeCargoById(random.nextInt(3) + 1);
+        int amount = random.nextInt(Integer.MAX_VALUE);
+        return updateShip(new Ship(typeCargo, amount));
+    }
+
 }

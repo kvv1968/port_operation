@@ -6,20 +6,29 @@
           integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <title>Port Operation</title>
     <link rel="stylesheet" type="text/css" href="../static/css/index.css" th:href="@{/css/index.css}"/>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 </head>
 <body>
 <h1>Операции в Порту</h1>
 <div class="raid" style="width: 500px;">
     <table class="table caption-top" id="raid-process">
-        <caption><h3>Корабли стоящие на рейде</h3>></caption>
+        <caption><h3>Корабли стоящие на рейде</h3></caption>
         <thead>
         <tr>
-            <th scope="col">#</th>
+            <th scope="col">№/№</th>
+            <th scope="col">ID Корабля</th>
             <th scope="col">Тип груза</th>
             <th scope="col">Объем груза</th>
         </tr>
         </thead>
-        <tbody id="tbodyShip"></tbody>
+        <tbody id="ship-list"></tbody>
     </table>
 </div>
 <div class="berth" style="width: 1000px;">
@@ -34,42 +43,33 @@
             <th scope="col">Процесс выгрузки груза</th>
         </tr>
         </thead>
-        <tbody>
-        <tr>
-            <th scope="col">Причал для Легких грузов</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-        </tr>
-        <tr>
-            <th scope="col">Причал для Средних грузов</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-        </tr>
-        <tr>
-            <th scope="col">Причал для Тяжелых грузов</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-        </tr>
+        <tbody id="list-berths">
         </tbody>
     </table>
 </div>
 <div>
-    <button class="btn btn-primary btn-sm" type="submit">Запуск</button>
-    <button class="btn btn-secondary btn-sm" type="submit">Остановить</button>
-    <br><br>
+    <form method="get" action="/start">
+        <button class="btn btn-primary btn-sm" type="submit">Запуск</button>
+    </form>
+    <br>
+    <form method="get" action="/stop">
+        <button class="btn btn-secondary btn-sm" type="submit">Остановить</button>
+    </form>
+    <br>
     <a class="btn btn-primary" href="/report" role="button">Вывести Отчет</a>
     <br><br>
     <a class="btn btn-primary" href="/settings" role="button">Настроить процессы Порта</a>
 </div>
+<br><br>
+<div id="request" th:object="${request == null? null: request}">
+    <h4>Настройки приложения</h4>
+    <p th:text="'Вместимость кораблей на рейде порта: ' + ${request == null?null:request.raidCapacity}">0</p>
+    <p th:text="'Скорость выгрузки на причале: ' + ${request == null?null:request.unloadingSpeed}">0</p>
+</div><br><br>
+<div id="msg-index" th:object="${msg}">
+    <h4 th:text="${msg}"></h4>
+</div><br><br>
 
-
-
-<script src="../static/js/main_page.js" th:src="@{/js/index.js}"></script>
+<script src="../static/js/index.js" th:src="@{/js/index.js}"></script>
 </body>
 </html>
