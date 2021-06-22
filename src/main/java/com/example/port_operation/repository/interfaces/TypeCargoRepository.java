@@ -4,5 +4,8 @@ import com.example.port_operation.model.TypeCargo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TypeCargoRepository extends JpaRepository<TypeCargo, Integer> {
-    TypeCargo getTypeCargoById(int id);
+    TypeCargo findTypeCargoById(int id);
+
+    TypeCargo findTypeCargoByType(String type);
+
 }

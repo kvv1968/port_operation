@@ -1,14 +1,17 @@
 package com.example.port_operation.model;
 
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import lombok.Data;
 
 @Data
 public class Raid {
 
     private int raidCapacity;
-    private Ship[]ships = new Ship[raidCapacity];
+    private List<Ship> ships ;
+    boolean isFreeRaid;
+
     private static volatile Raid instance;
 
     public static Raid getInstance(int raidCapacity){
@@ -20,18 +23,20 @@ public class Raid {
 
     private Raid(int raidCapacity) {
         this.raidCapacity = raidCapacity;
+        ships = new ArrayList<>(raidCapacity);
     }
 
 
     public void removeRaid(Ship ship){
-        Iterator<Ship>iterator = Arrays.stream(ships).iterator();
-        while (iterator.hasNext()){
-            Ship ship1 = iterator.next();
-            if (ship.equals(ship1)){
-                iterator.remove();
-            }
-        }
+       ships.remove(ship);
+    }
+    public boolean isFreeRaid(){
+        int count = (int)ships.stream().filter(Objects::nonNull).count();
+        isFreeRaid = count < raidCapacity;
+        return isFreeRaid;
     }
 
-
+    public void setShips(List<Ship> ships) {
+        this.ships = ships;
+    }
 }

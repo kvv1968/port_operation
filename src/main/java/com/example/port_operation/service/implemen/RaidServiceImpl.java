@@ -5,37 +5,73 @@ import com.example.port_operation.model.Ship;
 import com.example.port_operation.service.interfaces.RaidService;
 import com.example.port_operation.service.interfaces.ShipService;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RaidServiceImpl implements RaidService {
-    private int capacity;
+
     private ShipService shipService;
+
     private Raid raid;
+
+    private List<Ship> shipsList;
 
     @Autowired
     public RaidServiceImpl(ShipService shipService) {
         this.shipService = shipService;
     }
 
-    @Override
-    public boolean isFreeRaid() {
 
-        return false;
+    @Override
+    public void addShipByRaid() {
+        int i = 0;
+        int capacity = raid.getRaidCapacity();
+        if (raid.isFreeRaid()) {
+            List<Ship>shipsRepo = shipService.getAllShipsRepo().stream()
+                    .filter(ship -> ship.getAmountCargo() != 0)
+                    .collect(Collectors.toList());
+            shipsList = getShips();
+            int sizeShipsList = shipsList.size();
+            while (capacity > sizeShipsList){
+                if (shipsRepo.isEmpty() && shipsList.isEmpty()){
+                    shipsList.add(shipService.shipGeneration());
+                    capacity--;
+                } else if(shipsList.isEmpty()){
+                    shipsList.add(shipsRepo.get(i++));
+                    capacity--;
+                }else if (shipsRepo.isEmpty()){
+                    shipsList.add(shipService.shipGeneration());
+                    capacity--;
+                } else {
+                    shipsList.add(shipsRepo.get(i++));
+                    capacity--;
+                }
+            }
+            setShipsList(shipsList);
+        }
     }
 
     @Override
-    public void addShipByRaid(int raidCapacity) {
-        List<Ship>listRepo = shipService.getAllShipsRaid();//из репо получаем список кораблей
-        Ship[]ships = raid.getShips();//список кораблей на рейде
-        for (Ship ship:listRepo){
-            for (int i = ships.length; i < raidCapacity; i++) {
-                if (!ships[i].equals(ship)){
-                    ships[i] = ship;
-                }
-            }
-        }
+    public Raid getRaidCaparasity(int caparasity) {
+        raid = Raid.getInstance(caparasity);
+        return raid;
+    }
+
+    @Override
+    public void deleteShipByRaid(Ship ship) {
+        raid.removeRaid(ship);
+    }
+
+    public List<Ship> getShips() {
+        shipsList = raid.getShips();
+        return shipsList;
+    }
+
+    @Override
+    public void updateAllShips(List<Ship> ships) {
+        ships.forEach(ship -> shipService.updateShip(ship));
     }
 
     @Override
@@ -43,5 +79,7 @@ public class RaidServiceImpl implements RaidService {
         return raid;
     }
 
-
+    public void setShipsList(List<Ship> shipsList) {
+        raid.setShips(shipsList);
+    }
 }

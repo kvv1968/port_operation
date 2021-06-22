@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,12 +19,11 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "ship")
 public class Ship{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @OneToOne(targetEntity = TypeCargo.class, fetch = FetchType.EAGER)
@@ -33,10 +31,14 @@ public class Ship{
     private TypeCargo cargo;
 
     @Column
-    private int amountCargo;
+    private volatile int amountCargo;
 
     public Ship(TypeCargo cargo, int amountCargo) {
         this.cargo = cargo;
         this.amountCargo = amountCargo;
+    }
+
+    public synchronized int getAmountCargo() {
+        return amountCargo;
     }
 }
