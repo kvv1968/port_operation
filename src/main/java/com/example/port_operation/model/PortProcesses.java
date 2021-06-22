@@ -26,7 +26,7 @@ public class PortProcesses {
                 raid.getShipList().remove(ship);
                 berth = ber;
                 berth.setShip(ship);
-                berth.unloadingBerth();
+//                berth.unloadingBerth();
             }
         }
     }
