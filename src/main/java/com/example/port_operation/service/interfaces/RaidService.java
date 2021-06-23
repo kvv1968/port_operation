@@ -4,11 +4,11 @@ import com.example.port_operation.model.Raid;
 import com.example.port_operation.model.Ship;
 import java.util.List;
 
-public interface RaidService {
-    void addShipByRaid();
+public interface RaidService extends Runnable {
     Raid getRaidCaparasity(int caparasity);
-    void deleteShipByRaid(Ship ship);
     List<Ship> getShips();
-    void updateAllShips(List<Ship>ships);
-    Raid getRaid();
+    void deleteShipRepo(Ship ship);
+    void removeShipByRaid(Ship ship);
+    void deleteAllRepoShips();
+    int getCount();
 }
