@@ -4,8 +4,9 @@ import com.example.port_operation.model.Berth;
 import com.example.port_operation.model.Ship;
 import java.util.List;
 
-public interface BerthService {
-    void unloadingBerth(int unloadingSpeed);
+public interface BerthService extends Runnable{
     List<Berth> getAllBerths();
-    List<Ship> shipsRaid();
+    void stopBehthsThreads() throws InterruptedException;
+    List<Ship> shipsReports();
+    void setUnloadingSpeed(int unloadingSpeed);
 }

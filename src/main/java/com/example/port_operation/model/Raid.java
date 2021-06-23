@@ -1,16 +1,16 @@
 package com.example.port_operation.model;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.Data;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 
 @Data
 public class Raid {
-
+    private final Log logger = LogFactory.getLog(Raid.class);
     private int raidCapacity;
     private List<Ship> ships ;
-    boolean isFreeRaid;
+    private volatile boolean  isFreeRaid;
 
     private static volatile Raid instance;
 
@@ -23,20 +23,18 @@ public class Raid {
 
     private Raid(int raidCapacity) {
         this.raidCapacity = raidCapacity;
-        ships = new ArrayList<>(raidCapacity);
     }
 
 
     public void removeRaid(Ship ship){
        ships.remove(ship);
     }
-    public boolean isFreeRaid(){
-        int count = (int)ships.stream().filter(Objects::nonNull).count();
-        isFreeRaid = count < raidCapacity;
+
+    public boolean isFreeRaid(List<Ship> shipsList) {
+        isFreeRaid = shipsList.size() < raidCapacity;
+        logger.info(String.format("Рейд пустой %s", isFreeRaid));
         return isFreeRaid;
     }
 
-    public void setShips(List<Ship> ships) {
-        this.ships = ships;
-    }
+
 }

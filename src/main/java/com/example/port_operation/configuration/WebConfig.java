@@ -1,8 +1,8 @@
 package com.example.port_operation.configuration;
 
 import java.util.Locale;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
@@ -17,7 +17,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    private static final Logger logger = LoggerFactory.getLogger(WebConfig.class);
+    private final Log log = LogFactory.getLog(WebConfig.class);
 
     @Bean
     public ClassLoaderTemplateResolver templateResolver() {

@@ -5,53 +5,29 @@ import com.example.port_operation.model.Ship;
 import com.example.port_operation.service.interfaces.RaidService;
 import com.example.port_operation.service.interfaces.ShipService;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RaidServiceImpl implements RaidService {
-
+    private final Log logger = LogFactory.getLog(RaidServiceImpl.class);
     private ShipService shipService;
-
     private Raid raid;
-
+    @Getter
+    @Setter
     private List<Ship> shipsList;
+    private int count = 0;
 
-    @Autowired
     public RaidServiceImpl(ShipService shipService) {
         this.shipService = shipService;
     }
 
 
-    @Override
-    public void addShipByRaid() {
-        int i = 0;
-        int capacity = raid.getRaidCapacity();
-        if (raid.isFreeRaid()) {
-            List<Ship>shipsRepo = shipService.getAllShipsRepo().stream()
-                    .filter(ship -> ship.getAmountCargo() != 0)
-                    .collect(Collectors.toList());
-            shipsList = getShips();
-            int sizeShipsList = shipsList.size();
-            while (capacity > sizeShipsList){
-                if (shipsRepo.isEmpty() && shipsList.isEmpty()){
-                    shipsList.add(shipService.shipGeneration());
-                    capacity--;
-                } else if(shipsList.isEmpty()){
-                    shipsList.add(shipsRepo.get(i++));
-                    capacity--;
-                }else if (shipsRepo.isEmpty()){
-                    shipsList.add(shipService.shipGeneration());
-                    capacity--;
-                } else {
-                    shipsList.add(shipsRepo.get(i++));
-                    capacity--;
-                }
-            }
-            setShipsList(shipsList);
-        }
-    }
 
     @Override
     public Raid getRaidCaparasity(int caparasity) {
@@ -59,27 +35,47 @@ public class RaidServiceImpl implements RaidService {
         return raid;
     }
 
-    @Override
-    public void deleteShipByRaid(Ship ship) {
-        raid.removeRaid(ship);
-    }
-
     public List<Ship> getShips() {
-        shipsList = raid.getShips();
         return shipsList;
     }
 
     @Override
-    public void updateAllShips(List<Ship> ships) {
-        ships.forEach(ship -> shipService.updateShip(ship));
+    public void deleteShipRepo(Ship ship) {
+        shipService.deleteShipRepo(ship);
     }
 
     @Override
-    public Raid getRaid() {
-        return raid;
+    public void removeShipByRaid(Ship ship) {
+        shipsList.remove(ship);
     }
 
-    public void setShipsList(List<Ship> shipsList) {
-        raid.setShips(shipsList);
+    @Override
+    public void deleteAllRepoShips() {
+        shipService.deleteAllRepoShips();
+    }
+
+    @SneakyThrows
+    @Override
+    public void run() {
+        logger.info("Поток запущен RaidService");
+        shipsList = new CopyOnWriteArrayList<>();
+        while (true){
+            processRaid();
+        }
+    }
+
+    private synchronized void processRaid() throws InterruptedException {
+        while (raid.isFreeRaid(shipsList)){
+            Ship ship = shipService.shipGeneration();
+            shipsList.add(ship);
+            count++;
+            logger.info(String.format("Добавлен корабль %s в список рейда %s", ship, shipsList));
+        }
+        Thread.sleep(10000);
+        logger.info("Рейд занят");
+    }
+
+    public int getCount() {
+        return count;
     }
 }
