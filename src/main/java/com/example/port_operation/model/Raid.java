@@ -1,42 +1,36 @@
 package com.example.port_operation.model;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import lombok.Data;
+import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
+import org.springframework.context.ApplicationEvent;
 
-@Data
-public class Raid {
-
+@Getter
+@Setter
+public class Raid extends ApplicationEvent {
+    private final Log logger = LogFactory.getLog(Raid.class);
     private int raidCapacity;
-    private List<Ship> ships ;
-    boolean isFreeRaid;
+    private List<Ship> shipsRaid = new CopyOnWriteArrayList<>();
+    private boolean  isFreeRaid;
 
-    private static volatile Raid instance;
 
-    public static Raid getInstance(int raidCapacity){
-        if (instance == null) {
-            instance = new Raid(raidCapacity);
-        }
-        return instance;
-    }
 
-    private Raid(int raidCapacity) {
+    public Raid(int raidCapacity) {
+        super(raidCapacity);
         this.raidCapacity = raidCapacity;
-        ships = new ArrayList<>(raidCapacity);
     }
 
-
-    public void removeRaid(Ship ship){
-       ships.remove(ship);
+    public void addShipRaid(Ship ship){
+        shipsRaid.add(ship);
     }
-    public boolean isFreeRaid(){
-        int count = (int)ships.stream().filter(Objects::nonNull).count();
-        isFreeRaid = count < raidCapacity;
+
+    public boolean isFreeRaid() {
+        isFreeRaid = shipsRaid.size() < raidCapacity;
+        logger.info(String.format("Рейд пустой %s", isFreeRaid));
         return isFreeRaid;
     }
 
-    public void setShips(List<Ship> ships) {
-        this.ships = ships;
-    }
 }

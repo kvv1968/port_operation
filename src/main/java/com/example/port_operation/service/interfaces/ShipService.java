@@ -8,5 +8,6 @@ public interface ShipService {
     void deleteShipRepo (Ship ship);
     Ship updateShip(Ship ship);
     Ship  shipGeneration();
+    void deleteAllRepoShips();
 
 }

@@ -1,55 +1,39 @@
 package com.example.port_operation.model;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
+import org.springframework.context.ApplicationEvent;
 
-
-public class Berth  {
-    @Getter
+@Getter
+@Setter
+public class Berth extends ApplicationEvent  {
+    private final Log logger = LogFactory.getLog(Berth.class);
     private TypeCargo typeCargo;
-    @Getter
-    @Setter
-    private List<Ship> ships = new CopyOnWriteArrayList<>();
-    private volatile boolean isFreeBerth;
-    @Getter
-    @Setter
-    private int unloadingSpeed;
-    @Getter
-    @Setter
-    private String nameThread;
-    @Getter
-    @Setter
-    private volatile int processIndicator;
-    @Getter
-    private List<Ship>shipsReports = new ArrayList<>();
+    private ShipUnload shipUnload;
+    private boolean isFreeBerth;
 
 
-    public Berth(TypeCargo typeCargo) {
+    public Berth(TypeCargo typeCargo, boolean isFreeBerth) {
+        super(isFreeBerth);
         this.typeCargo = typeCargo;
     }
 
-
-    public void run() {
-        Ship ship = ships.get(0);
-        for (int i = ship.getAmountCargo(); i > 0; i -= unloadingSpeed) {
-            processIndicator = i;
-        }
-        if (processIndicator < 0){
-            processIndicator = 0;
-            ship.setAmountCargo(processIndicator);
-            ships.remove(ship);
-            shipsReports.add(ship);
-        }
-    }
-    public synchronized boolean isFreeBerth(){
-        isFreeBerth = processIndicator > 0;
+    public boolean isFreeBerth() {
+        isFreeBerth = shipUnload == null;
         return isFreeBerth;
     }
-    public void addShip(Ship ship){
-        ships.add(ship);
+
+    @Override
+    public String toString() {
+        return "Berth{" +
+                "typeCargo=" + typeCargo +
+                ", shipUnload=" + shipUnload +
+                ", isFreeBerth=" + isFreeBerth +
+                '}';
     }
+
+
 }

@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <title>Port Operation</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/index.css" th:href="@{/css/index.css}"/>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 </head>
 <body>
-<h1>Отчеты о процессе</h1>
+
+<div class="raid" style="width: 500px;">
+    <H3>Отчет о работе Порта</H3>
+    <ul th:object="${report}">
+        <li th:text="'Время работы порта - ' + ${report.portOpeningHours}"></li>
+        <li th:text="'Вместимость рейда - ' + ${report.raidCapacity}"></li>
+        <li th:text="'Количество причалов - ' + ${report.numberBerths}"></li>
+        <li th:text="'Скорость выгрузки на причале - ' + ${report.unloadingSpeed}"></li>
+        <li th:text="'Количество кораблей прошедших через рейд - ' + ${report.numberShipsEnteredRaid}"></li>
+        <li th:text="'Количество выгруженных кораблей - ' + ${report.numberUnloadedShips}"></li>
+    </ul>
+    <table class="table caption-top" id="-process">
+        <caption><h5>Список выгруженных кораблей</h5></caption>
+        <thead>
+        <tr>
+            <th scope="col">№/№</th>
+            <th scope="col">Корабль</th>
+            <th scope="col">Время выгрузки</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="shipUnload : ${shipUnloads}">
+            <th scope="col" th:text="${shipUnloads.indexOf(shipUnload)}"></th>
+            <th scope="col" th:text="${shipUnload}"></th>
+            <th scope="col" th:text="${shipUnload.workingHours}"></th>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

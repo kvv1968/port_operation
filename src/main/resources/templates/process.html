@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <title>Operation</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/index.css" th:href="@{/css/index.css}"/>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+
+<div id="block">
+    <h3>Операции в Порту</h3>
+    <div class="raid" style="width: 500px;">
+        <table class="table caption-top" id="raid-process">
+            <caption><h3>Корабли стоящие на рейде</h3></caption>
+            <thead>
+            <tr>
+                <th scope="col">№/№</th>
+                <th scope="col">ID Корабля</th>
+            </tr>
+            </thead>
+            <tbody id="ships">
+            <tr th:each="ship : ${ships}">
+                <th scope="col" th:text="${ships.indexOf(ship)}">0</th>
+                <th scope="col" th:text="${ship.toString()}">0</th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="" style="width: 1000px;">
+        <table class="table caption-top" id="berth-process">
+            <caption><h3>Причалы</h3></caption>
+            <thead>
+            <tr>
+                <th scope="col">Тип причала</th>
+                <th scope="col">Имя выгружающего потока </th>
+                <th scope="col">Процесс выгрузки груза</th>
+            </tr>
+            </thead>
+            <tbody id="berths">
+            <tr th:each="berth : ${berths}">
+                <th scope="col" th:text="${berth.typeCargo.getType()}">0</th>
+                <th scope="col" th:text="${berth.getShipUnload()}">0</th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p>При остановки процесса потоки закрываются не сразу, а по завершению, когда потоки остановятся произойдет переход на главную страницу</p>
+    <a th:href="@{/stop}">Остановите процесс</a>
+</div>
+<div>
+
+
+
+</div>
+<br><br>
+
+<script>setInterval(function(){
+    $("#block").load("#block");
+    }, 2000);
+</script>
+
+
+<!--<script src="../static/js/process.js" th:src="@{/js/process.js}"></script>-->
+</body>
+</html>
