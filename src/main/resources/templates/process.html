@@ -16,9 +16,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 </head>
 <body>
-<h1>Операции в Порту</h1>
+
 
 <div id="block">
+    <h3>Операции в Порту</h3>
     <div class="raid" style="width: 500px;">
         <table class="table caption-top" id="raid-process">
             <caption><h3>Корабли стоящие на рейде</h3></caption>
@@ -26,16 +27,12 @@
             <tr>
                 <th scope="col">№/№</th>
                 <th scope="col">ID Корабля</th>
-                <th scope="col">Тип груза</th>
-                <th scope="col">Объем груза</th>
             </tr>
             </thead>
             <tbody id="ships">
             <tr th:each="ship : ${ships}">
                 <th scope="col" th:text="${ships.indexOf(ship)}">0</th>
-                <th scope="col" th:text="${ship.getId()}">0</th>
-                <th scope="col" th:text="${ship.getCargo().getType()}">0</th>
-                <th scope="col" th:text="${ship.getAmountCargo()}">0</th>
+                <th scope="col" th:text="${ship.toString()}">0</th>
             </tr>
             </tbody>
         </table>
@@ -53,7 +50,7 @@
             <tbody id="berths">
             <tr th:each="berth : ${berths}">
                 <th scope="col" th:text="${berth.typeCargo.getType()}">0</th>
-                <th scope="col" th:text="${berth.getNameThread()}">0</th>
+                <th scope="col" th:text="${berth.getShipUnload()}">0</th>
             </tr>
             </tbody>
         </table>

@@ -32,17 +32,15 @@
         <thead>
         <tr>
             <th scope="col">№/№</th>
-            <th scope="col">ID Корабля</th>
-            <th scope="col">Тип груза</th>
-            <th scope="col">Объем груза(Остался после выгрузки)</th>
+            <th scope="col">Корабль</th>
+            <th scope="col">Время выгрузки</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="ship : ${ships}">
-            <th scope="col" th:text="${ships.indexOf(ship)}"></th>
-            <th scope="col" th:text="${ship.getId()}"></th>
-            <th scope="col" th:text="${ship.getCargo().getType()}"></th>
-            <th scope="col" th:text="${ship.getAmountCargo()}"></th>
+        <tr th:each="shipUnload : ${shipUnloads}">
+            <th scope="col" th:text="${shipUnloads.indexOf(shipUnload)}"></th>
+            <th scope="col" th:text="${shipUnload}"></th>
+            <th scope="col" th:text="${shipUnload.workingHours}"></th>
         </tr>
         </tbody>
     </table>

@@ -4,6 +4,7 @@ import com.example.port_operation.model.Berth;
 import com.example.port_operation.model.ReportPort;
 import com.example.port_operation.model.RequestSetting;
 import com.example.port_operation.model.Ship;
+import com.example.port_operation.model.ShipUnload;
 import com.example.port_operation.service.implemen.PortService;
 import java.util.List;
 import org.apache.juli.logging.Log;
@@ -29,9 +30,9 @@ public class ViewController {
     @GetMapping("report")
     public String getReport(Model model) {
         ReportPort report = portService.getReport();
-        List<Ship>ships = portService.shipsReports();
+        List<ShipUnload>shipUnloads = portService.shipUnloadReports();
         model.addAttribute("report", report);
-        model.addAttribute("ships", ships);
+        model.addAttribute("shipUnloads", shipUnloads);
         return "report";
     }
 
@@ -41,13 +42,13 @@ public class ViewController {
     }
 
     @GetMapping("start")
-    public String start(Model model) {
+    public String start(Model model) throws InterruptedException {
         return processController(model);
     }
 
     @GetMapping("stop")
-    public String stop(Model model) throws InterruptedException {
-        portService.stopThread();
+    public String stop(Model model) {
+        portService.stopProcessPort();
         model.addAttribute("msg", "Процесс остановлен");
         return "index";
     }
@@ -63,27 +64,26 @@ public class ViewController {
     public String getProcess(Model model) {
         List<Ship>ships = portService.getAllShipsByRaid();
         List<Berth>berths = portService.getAllBerths();
+        if (ships == null || berths == null){
+            return "redirect:/";
+        }
         model.addAttribute("ships", ships);
         model.addAttribute("berths", berths);
         return "process";
     }
 
 
-    private String processController(Model model) {
+    private String processController(Model model) throws InterruptedException {
         if (raidCapacity == 0 && unloadingSpeed == 0) {
             model.addAttribute("msg", "Перед запуском нужно настроить приложение");
             return "settings";
         }
         portService.setRaidCapacity(raidCapacity);
         portService.setUnloadingSpeed(unloadingSpeed);
-        if (portService.getRaidThread() == null && portService.getBerthTthread() == null){
-            portService.processPort();
-            String msg = "Процесс запущен...";
-            model.addAttribute("msg", msg);
-            return "index";
-        }
-        log.info("Поток уже запущен");
-       return "redirect:/";
+        portService.processPort();
+        String msg = "Процесс запущен...";
+        model.addAttribute("msg", msg);
+        return "index";
     }
 
 }

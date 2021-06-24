@@ -5,38 +5,29 @@ import com.example.port_operation.model.Ship;
 import com.example.port_operation.service.interfaces.RaidService;
 import com.example.port_operation.service.interfaces.ShipService;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
+import lombok.Data;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
+@Data
 public class RaidServiceImpl implements RaidService {
     private final Log logger = LogFactory.getLog(RaidServiceImpl.class);
     private ShipService shipService;
     private Raid raid;
-    @Getter
-    @Setter
-    private List<Ship> shipsList;
     private int count = 0;
+    private Thread thread;
 
     public RaidServiceImpl(ShipService shipService) {
         this.shipService = shipService;
     }
 
 
-
     @Override
-    public Raid getRaidCaparasity(int caparasity) {
-        raid = Raid.getInstance(caparasity);
-        return raid;
-    }
-
-    public List<Ship> getShips() {
-        return shipsList;
+    public List<Ship> getShipsRaid() {
+        return raid.getShipsRaid();
     }
 
     @Override
@@ -46,7 +37,7 @@ public class RaidServiceImpl implements RaidService {
 
     @Override
     public void removeShipByRaid(Ship ship) {
-        shipsList.remove(ship);
+        raid.getShipsRaid().remove(ship);
     }
 
     @Override
@@ -54,28 +45,21 @@ public class RaidServiceImpl implements RaidService {
         shipService.deleteAllRepoShips();
     }
 
-    @SneakyThrows
-    @Override
-    public void run() {
-        logger.info("Поток запущен RaidService");
-        shipsList = new CopyOnWriteArrayList<>();
-        while (true){
-            processRaid();
-        }
-    }
-
-    private synchronized void processRaid() throws InterruptedException {
-        while (raid.isFreeRaid(shipsList)){
-            Ship ship = shipService.shipGeneration();
-            shipsList.add(ship);
-            count++;
-            logger.info(String.format("Добавлен корабль %s в список рейда %s", ship, shipsList));
-        }
-        Thread.sleep(10000);
-        logger.info("Рейд занят");
-    }
 
     public int getCount() {
         return count;
+    }
+
+
+    @Override
+    public void onApplicationEvent(@NotNull Raid raid) {
+        this.raid = raid;
+        logger.info(String.format("Произошло событие на рейде стоит %s кораблей", raid.getShipsRaid().size()));
+        while (raid.isFreeRaid()) {
+            Ship ship = shipService.shipGeneration();
+            raid.addShipRaid(ship);
+            count++;
+            logger.info(String.format("Добавлен корабль %s в список рейда %s", ship, raid.getShipsRaid()));
+        }
     }
 }
