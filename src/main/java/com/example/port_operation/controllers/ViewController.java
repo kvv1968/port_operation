@@ -47,7 +47,7 @@ public class ViewController {
     }
 
     @GetMapping("stop")
-    public String stop(Model model) {
+    public String stop(Model model) throws InterruptedException {
         portService.stopProcessPort();
         model.addAttribute("msg", "Процесс остановлен");
         return "index";
@@ -56,7 +56,6 @@ public class ViewController {
     @GetMapping("settings/param")
     public String getRequestSetting(RequestSetting request, Model model) {
         raidCapacity = request.getRaidCapacity();
-        unloadingSpeed = request.getUnloadingSpeed();
         model.addAttribute("request", request);
         return "index";
     }
@@ -73,16 +72,15 @@ public class ViewController {
     }
 
 
-    private String processController(Model model) throws InterruptedException {
+    private String processController(Model model){
         if (raidCapacity == 0 && unloadingSpeed == 0) {
-            model.addAttribute("msg", "Перед запуском нужно настроить приложение");
+            model.addAttribute("msgg", "Перед запуском нужно настроить приложение");
             return "settings";
         }
         portService.setRaidCapacity(raidCapacity);
-        portService.setUnloadingSpeed(unloadingSpeed);
-        portService.processPort();
         String msg = "Процесс запущен...";
         model.addAttribute("msg", msg);
+        portService.start();
         return "index";
     }
 

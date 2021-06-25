@@ -10,32 +10,33 @@ import com.example.port_operation.model.ShipUnload;
 import com.example.port_operation.service.interfaces.BerthService;
 import com.example.port_operation.service.interfaces.RaidService;
 import java.util.List;
-import lombok.Data;
+import java.util.concurrent.ExecutionException;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 @Service
-@Data
-public class PortService implements ApplicationListener<Raid> {
+@Getter
+@Setter
+public class PortService extends Thread {
     private final Log logger = LogFactory.getLog(PortService.class);
     private int raidCapacity;
-    private int unloadingSpeed;
 
     private RaidService raidService;
     private BerthService berthService;
     private Raid raid;
+    private Berth[] berths;
     private long startProcessPort;
     private long endProcessPort;
     private boolean isRun = true;
-
     @Autowired
-    private ApplicationContext applicationContext;
+    private RaidSpringEventPublisher raidEventPublisher;
+    @Autowired
+    private BerthSpringEventPublisher berthEventPublisher;
 
     public PortService(RaidService raidService,
                        BerthService berthService) {
@@ -56,43 +57,43 @@ public class PortService implements ApplicationListener<Raid> {
         return berthService.shipUnloadReports();
     }
 
-    public void processPort() throws InterruptedException {
+    public void processPort() throws InterruptedException, ExecutionException {
         logger.info("Запуск процесса в порту");
-        RaidSpringEventPublisher raidSpringEventPublisher = applicationContext.getBean(RaidSpringEventPublisher.class);
-        BerthSpringEventPublisher berthSpringEventPublisher = applicationContext.getBean(BerthSpringEventPublisher.class);
         startProcessPort = System.currentTimeMillis();
         raidService.deleteAllRepoShips();
-        berthService.setUnloadingSpeed(unloadingSpeed);
-        process(raidSpringEventPublisher, berthSpringEventPublisher);
+        raid = new Raid(raidCapacity, true);
+        berths = berthService.getBerths();
+        process();
     }
 
-    private void process(RaidSpringEventPublisher raidSpringEventPublisher,
-                         BerthSpringEventPublisher berthSpringEventPublisher) throws InterruptedException {
+    private void process() throws InterruptedException, ExecutionException {
         while (isRun){
-            raidSpringEventPublisher.publishRaidEvent(raidCapacity);
-            Thread.sleep(5000);
-            berthSpringEventPublisher.publishBerthEvent(true);
-            Thread.sleep(2000);
+             raidEventPublisher.publishRaidEvent(raid);
+            if (raid.getShipsRaid().size() != 0){
+                for (Berth berth:berths){
+                    berthService.processBerth(berth, raidService.getShipsRaid());
+                }
+            }
         }
     }
 
-    public void stopProcessPort(){
+    public void stopProcessPort() throws InterruptedException {
         isRun = false;
         endProcessPort = System.currentTimeMillis();
+        raidService.setRunRaid(false);
+        this.interrupt();
+        this.join();
         logger.info("Остановка процесса в порту");
     }
 
     public ReportPort getReport() {
-        return new ReportPort(raidCapacity, unloadingSpeed,
-                raidService.getCount(), berthService.shipUnloadReports().size(), String.valueOf(endProcessPort - startProcessPort),
+        return new ReportPort(raidCapacity, raidService.getCount(), berthService.shipUnloadReports().size(), String.valueOf(endProcessPort - startProcessPort),
                 berthService.getAllBerths().size());
     }
 
     @SneakyThrows
     @Override
-    public void onApplicationEvent(@NotNull Raid raid) {
-        for (Berth berth:getAllBerths()){
-            berthService.processBerth(berth, raid);
-        }
+    public void run() {
+        processPort();
     }
 }

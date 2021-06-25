@@ -2,6 +2,7 @@ package com.example.port_operation.model;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.juli.logging.Log;
@@ -10,17 +11,21 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 @Setter
+@Singleton
 public class Raid extends ApplicationEvent {
     private final Log logger = LogFactory.getLog(Raid.class);
+
     private int raidCapacity;
-    private List<Ship> shipsRaid = new CopyOnWriteArrayList<>();
+    private List<Ship> shipsRaid;
     private boolean  isFreeRaid;
 
 
 
-    public Raid(int raidCapacity) {
-        super(raidCapacity);
+    public Raid(int raidCapacity, boolean  isFreeRaid) {
+        super(isFreeRaid);
         this.raidCapacity = raidCapacity;
+        this.isFreeRaid = isFreeRaid;
+        shipsRaid = new CopyOnWriteArrayList<>();
     }
 
     public void addShipRaid(Ship ship){
@@ -28,8 +33,7 @@ public class Raid extends ApplicationEvent {
     }
 
     public boolean isFreeRaid() {
-        isFreeRaid = shipsRaid.size() < raidCapacity;
-        logger.info(String.format("Рейд пустой %s", isFreeRaid));
+        logger.info(String.format("Рейд свободен %s", isFreeRaid));
         return isFreeRaid;
     }
 

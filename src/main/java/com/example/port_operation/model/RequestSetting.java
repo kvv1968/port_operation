@@ -9,5 +9,4 @@ import lombok.ToString;
 @ToString
 public class RequestSetting {
     private int raidCapacity;
-    private int unloadingSpeed;
 }

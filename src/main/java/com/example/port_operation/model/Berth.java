@@ -14,11 +14,15 @@ public class Berth extends ApplicationEvent  {
     private TypeCargo typeCargo;
     private ShipUnload shipUnload;
     private boolean isFreeBerth;
+    private String threadNames;
+    private static long indicator;
+    private long  shipId;
 
 
     public Berth(TypeCargo typeCargo, boolean isFreeBerth) {
-        super(isFreeBerth);
+        super(typeCargo);
         this.typeCargo = typeCargo;
+        this.isFreeBerth = isFreeBerth;
     }
 
     public boolean isFreeBerth() {
@@ -35,5 +39,15 @@ public class Berth extends ApplicationEvent  {
                 '}';
     }
 
+    public static long getIndicator() {
+        return ShipUnload.indicator;
+    }
 
+    public long getShipId() {
+        long id = 0L;
+        if (shipUnload != null){
+            id = shipUnload.getShip().getId();
+        }
+        return id;
+    }
 }

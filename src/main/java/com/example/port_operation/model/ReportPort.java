@@ -7,7 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class ReportPort {
     private int raidCapacity;
-    private int unloadingSpeed;
     private int numberShipsEnteredRaid;
     private int numberUnloadedShips;
     private String portOpeningHours;

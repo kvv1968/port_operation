@@ -8,7 +8,7 @@
 </head>
 <body>
 <H1>Настройка процессов Порта</H1>
-<h2 id="msg" th:text="${msg}" style=" background-color:tomato;"></h2>
+<h2 id="msg" th:text="${msgg}" style=" background-color:tomato;"></h2>
 
 <div class="wrapper">
     <form method="get" class="bg-body" name="setting" action="/settings/param" >
@@ -29,22 +29,22 @@
             </div>
         </div>
         <br><br>
-        <div class="wrapper-unloading-speed-berth">
-            <h5>Введите данные(число) - скорость выгрузки на причале любое положительное число от 1</h5>
-            <div class="row g-3 align-items-center">
-                <div class="col-auto">
-                    <label class="col-form-label">скорость выгрузки</label>
-                </div>
-                <div class="col-auto">
-                    <input type="text" name="unloadingSpeed" required/>
-                </div>
-                <div class="col-auto">
-    <span class="form-text">
-      Любое число
-    </span>
-                </div>
-            </div>
-        </div><br><br>
+<!--        <div class="wrapper-unloading-speed-berth">-->
+<!--            <h5>Введите данные(число) - скорость выгрузки на причале любое положительное число от 1</h5>-->
+<!--            <div class="row g-3 align-items-center">-->
+<!--                <div class="col-auto">-->
+<!--                    <label class="col-form-label">скорость выгрузки</label>-->
+<!--                </div>-->
+<!--                <div class="col-auto">-->
+<!--                    <input type="text" name="unloadingSpeed" required/>-->
+<!--                </div>-->
+<!--                <div class="col-auto">-->
+<!--    <span class="form-text">-->
+<!--      Любое число-->
+<!--    </span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div><br><br>-->
 <!--        <div class="wrapper-number-cargo-types">-->
 <!--            <h5>Введите данные - типы груза через запятую</h5>-->
 <!--            <div class="row g-3 align-items-center">-->

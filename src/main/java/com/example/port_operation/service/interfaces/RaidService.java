@@ -11,4 +11,5 @@ public interface RaidService extends ApplicationListener<Raid> {
     void removeShipByRaid(Ship ship);
     void deleteAllRepoShips();
     int getCount();
+    void setRunRaid(boolean runRaid);
 }
