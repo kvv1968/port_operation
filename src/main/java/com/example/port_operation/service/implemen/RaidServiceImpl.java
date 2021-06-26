@@ -66,6 +66,7 @@ public class RaidServiceImpl implements RaidService {
     @SneakyThrows
     @Override
     public void onApplicationEvent(@NotNull Raid raid) {
+        logger.info(String.format("На рейдерном сервиса Услышали событие на рейде %s",raid));
         processingRaid();
     }
 
@@ -74,13 +75,13 @@ public class RaidServiceImpl implements RaidService {
         while (raid.getShipsRaid().size() < raid.getRaidCapacity()) {
             Ship ship = shipService.shipGeneration();
             raid.addShipRaid(ship);
-            logger.info(String.format("Добавлен корабль %s в список рейда %s", ship.getId(), raid.getShipsRaid()));
             deleteShipRepo(ship);
             count++;
         }
     }
 
 
+    @SneakyThrows
     @Override
     public void run()  {
         Thread thread = Thread.currentThread();
@@ -95,6 +96,7 @@ public class RaidServiceImpl implements RaidService {
             }else {
                 raidSpringEventPublisher.publishRaidEvent(raid);
             }
+            Thread.sleep(2000);
         }
     }
 

@@ -17,10 +17,13 @@
 </head>
 <body>
 
-
 <div id="block">
-    <h3>Операции в Порту</h3>
-    <div class="raid" style="width: 500px;">
+    <div>
+        <h3>Операции в Порту</h3>
+        <a href="/index">Вернуться на главную страницу</a>
+    </div>
+
+    <div class="raid" style="width: 700px;" id="left">
         <table class="table caption-top" id="raid-process">
             <caption><h3>Корабли стоящие на рейде</h3></caption>
             <thead>
@@ -37,7 +40,7 @@
             </tbody>
         </table>
     </div>
-    <div class="" style="width: 1000px;">
+    <div class="" style="width: 1000px;" id="richt">
         <table class="table caption-top" id="berth-process">
             <caption><h3>Причалы</h3></caption>
             <thead>
@@ -48,34 +51,36 @@
                 <th scope="col">Процесс выгрузки груза</th>
             </tr>
             </thead>
-            <tbody >
+            <tbody>
             <tr th:each="berth : ${berths}">
                 <th scope="col" th:text="${berth.typeCargo.getType()}">0</th>
                 <th scope="col" th:text="${berth.getThreadNames()}">0</th>
                 <th scope="col" th:text="${berth.getShipId()}">0</th>
-<!--                <th scope="col"><meter id="fuel"-->
-<!--                                       min="0" max="2000000"-->
-<!--                                       low="533" high="66" optimum="180"-->
-<!--                                       th:text="${berth.getIndicator()}">-->
-<!--                </meter></th>-->
-                <th scope="col" ><progress  max="" th:text="${berth.getIndicator()}"> 0 </progress></th>
+                <!--                <th scope="col"><meter id="fuel"-->
+                <!--                                       min="0" max="2000000"-->
+                <!--                                       low="533" high="66" optimum="180"-->
+                <!--                                       th:text="${berth.getIndicator()}">-->
+                <!--                </meter></th>-->
+                <th scope="col">
+                    <progress max="" th:text="${berth.getIndicator()}"> 0</progress>
+                </th>
             </tr>
             </tbody>
         </table>
     </div>
-    <p>При остановки процесса потоки закрываются не сразу, а по завершению, когда потоки остановятся произойдет переход на главную страницу</p>
-    <a th:href="@{/stop}">Остановите процесс</a>
+    <div id="richt1">
+        <p>При остановки процесса потоки закрываются не сразу, а по завершению, когда потоки остановятся произойдет
+            переход на главную страницу</p>
+        <a th:href="@{/stop}">Остановите процесс</a>
+
+    </div>
 </div>
-<div>
 
-
-
-</div>
 <br><br>
 
-<script>setInterval(function(){
+<script>setInterval(function () {
     $("#block").load("#block");
-    }, 2000);
+}, 2000);
 </script>
 
 

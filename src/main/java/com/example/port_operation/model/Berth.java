@@ -27,6 +27,7 @@ public class Berth extends ApplicationEvent  {
 
     public boolean isFreeBerth() {
         isFreeBerth = shipUnload == null;
+        logger.info(String.format("Свободен причал %s", isFreeBerth));
         return isFreeBerth;
     }
 

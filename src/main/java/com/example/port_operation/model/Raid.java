@@ -28,6 +28,7 @@ public class Raid extends ApplicationEvent {
     }
 
     public void addShipRaid(Ship ship){
+        logger.info(String.format("Добавлен корабль %s в список рейда %s", ship.getId(), getShipsRaid()));
         shipsRaid.add(ship);
     }
 
