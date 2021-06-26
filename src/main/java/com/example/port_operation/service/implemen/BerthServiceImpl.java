@@ -1,8 +1,8 @@
 package com.example.port_operation.service.implemen;
 
-import com.example.port_operation.configuration.BerthSpringEventPublisher;
 import com.example.port_operation.configuration.RaidSpringEventPublisher;
 import com.example.port_operation.model.Berth;
+import com.example.port_operation.model.Raid;
 import com.example.port_operation.model.Ship;
 import com.example.port_operation.model.ShipUnload;
 import com.example.port_operation.repository.interfaces.TypeCargoRepository;
@@ -15,6 +15,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,9 +35,8 @@ public class BerthServiceImpl implements BerthService {
     private List<ShipUnload> shipsUnloadReports = new ArrayList<>();
     private RaidService raidService;
     private int index = 0;
+    private boolean isBerthsRun;
 
-    @Autowired
-    private BerthSpringEventPublisher berthSpringEventPublisher;
     @Autowired
     private RaidSpringEventPublisher raidSpringEventPublisher;
 
@@ -56,36 +57,32 @@ public class BerthServiceImpl implements BerthService {
         return Arrays.stream(berths).collect(Collectors.toList());
     }
 
-    public synchronized void processBerth(Berth berth, List<Ship> shipsRaid) throws ExecutionException, InterruptedException {
-        for (Ship ship : shipsRaid) {
-            if (ship.getCargo().getId() == berth.getTypeCargo().getId() && berth.isFreeBerth()) {
-                logger.info(String.format("Запуск потока на причале %s для корабля %s", berth, ship));
-                berth.setFreeBerth(false);
-                raidService.removeShipByRaid(ship);
-                ShipUnload shipUnload = new ShipUnload(ship);
-                berth.setShipUnload(shipUnload);
-                processThreads(shipUnload, berth);
-            }
-        }
+    public void processBerth(Berth berth, Ship ship) throws ExecutionException, InterruptedException {
+        logger.info(String.format("Пришвартовался на причал %s для корабль %s для выгрузки",
+                berth.getTypeCargo().getType(), ship));
+        berth.setFreeBerth(false);
+        raidService.removeShipByRaid(ship);
+        ShipUnload shipUnload = new ShipUnload(ship);
+        berth.setShipUnload(shipUnload);
+        processThreads(shipUnload, berth);
     }
 
-    @Override
-    public synchronized void processBerth(Ship ship) throws ExecutionException, InterruptedException {
+
+
+    public Berth processBerth(Ship ship) {
         Berth berth = raidService.getShipsRaid().stream()
                 .map(Ship::getCargo)
                 .map(t -> {
                     return Arrays.stream(getBerths())
                             .filter(b -> b.getTypeCargo().getId() == t.getId())
                             .filter(b -> b.getShipUnload() == null)
-                            .findAny()
-                            .orElse(null);
+                            .findAny().orElse(null);
                 }).findAny().orElse(null);
-
-
-        if (berth != null){
-            processBerth(berth, raidService.getShipsRaid());
-            logger.info(String.format("Добавлен корабль %s на причал %s", ship, berth));
+        if (berth != null && ship.getAmountCargo() != 0) {
+            logger.info(String.format("Выбран причал %s для выгрузки корабля %d", berth, ship.getId()));
+            return berth;
         }
+        return null;
     }
 
     private void processThreads(ShipUnload shipUnload, Berth berth) throws ExecutionException, InterruptedException {
@@ -97,7 +94,6 @@ public class BerthServiceImpl implements BerthService {
         berth.setThreadNames(String.format("%s  и  %s", future1.get().getId(), future2.get().getId()));
         berth.setFreeBerth(true);
         berth.setShipUnload(null);
-        berthSpringEventPublisher.publishBerthEvent(berth);
 
         shipUnload.getShip().setAmountCargo(0);
         shipsUnloadReports.add(shipUnload);
@@ -119,8 +115,36 @@ public class BerthServiceImpl implements BerthService {
 
     @SneakyThrows
     @Override
-    public void onApplicationEvent(@NotNull Berth berth) {
-        processBerth(berth, raidService.getShipsRaid());
+    public void run() {
+        Thread thread = Thread.currentThread();
+        logger.info(String.format("Запуск потока %s на причалах", thread.getName()));
+        while (isBerthsRun) {
+            if (raidService.getRaid() != null){
+                processBerths(raidService.getRaid());
+                Thread.sleep(1000);
+            }
+        }
     }
 
+    @SneakyThrows
+    @Override
+    public void onApplicationEvent(@NotNull Raid raid) {
+        Lock lock = new ReentrantLock();
+        lock.lock();
+        try {
+            processBerths(raid);
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    private void processBerths(@NotNull Raid raid) throws ExecutionException, InterruptedException {
+        Berth berth;
+        for (Ship ship: raid.getShipsRaid()){
+            berth = processBerth(ship);
+            if (berth != null) {
+                processBerth(berth, ship);
+            }
+        }
+    }
 }

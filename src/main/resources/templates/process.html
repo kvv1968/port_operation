@@ -26,10 +26,10 @@
             <thead>
             <tr>
                 <th scope="col">№/№</th>
-                <th scope="col">ID Корабля</th>
+                <th scope="col">Корабль</th>
             </tr>
             </thead>
-            <tbody id="ships">
+            <tbody>
             <tr th:each="ship : ${ships}">
                 <th scope="col" th:text="${ships.indexOf(ship)}">0</th>
                 <th scope="col" th:text="${ship.toString()}">0</th>
@@ -48,7 +48,7 @@
                 <th scope="col">Процесс выгрузки груза</th>
             </tr>
             </thead>
-            <tbody id="berths">
+            <tbody >
             <tr th:each="berth : ${berths}">
                 <th scope="col" th:text="${berth.typeCargo.getType()}">0</th>
                 <th scope="col" th:text="${berth.getThreadNames()}">0</th>

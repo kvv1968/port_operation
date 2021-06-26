@@ -1,6 +1,5 @@
 package com.example.port_operation.service.implemen;
 
-import com.example.port_operation.configuration.BerthSpringEventPublisher;
 import com.example.port_operation.configuration.RaidSpringEventPublisher;
 import com.example.port_operation.model.Berth;
 import com.example.port_operation.model.Raid;
@@ -10,10 +9,10 @@ import com.example.port_operation.model.ShipUnload;
 import com.example.port_operation.service.interfaces.BerthService;
 import com.example.port_operation.service.interfaces.RaidService;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Getter
 @Setter
-public class PortService extends Thread {
+public class PortService {
     private final Log logger = LogFactory.getLog(PortService.class);
     private int raidCapacity;
 
@@ -33,10 +32,9 @@ public class PortService extends Thread {
     private long startProcessPort;
     private long endProcessPort;
     private boolean isRun = true;
+    private ExecutorService executorService;
     @Autowired
     private RaidSpringEventPublisher raidEventPublisher;
-    @Autowired
-    private BerthSpringEventPublisher berthEventPublisher;
 
     public PortService(RaidService raidService,
                        BerthService berthService) {
@@ -57,32 +55,30 @@ public class PortService extends Thread {
         return berthService.shipUnloadReports();
     }
 
-    public void processPort() throws InterruptedException, ExecutionException {
+    public void processPort(){
         logger.info("Запуск процесса в порту");
         startProcessPort = System.currentTimeMillis();
         raidService.deleteAllRepoShips();
         raid = new Raid(raidCapacity, true);
+        raidService.setRaid(raid);
         berths = berthService.getBerths();
-        process();
+        raidService.setRunRaid(true);
+        berthService.setBerthsRun(true);
+
+        executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(raidService);
+        executorService.execute(berthService);
     }
 
-    private void process() throws InterruptedException, ExecutionException {
-        while (isRun){
-             raidEventPublisher.publishRaidEvent(raid);
-            if (raid.getShipsRaid().size() != 0){
-                for (Berth berth:berths){
-                    berthService.processBerth(berth, raidService.getShipsRaid());
-                }
-            }
-        }
-    }
 
-    public void stopProcessPort() throws InterruptedException {
-        isRun = false;
-        endProcessPort = System.currentTimeMillis();
+    public void stopProcessPort()  {
         raidService.setRunRaid(false);
-        this.interrupt();
-        this.join();
+        berthService.setBerthsRun(false);
+        logger.info("Устанавливаем вместимость рейда на 0");
+        executorService.shutdown();
+        logger.info(String.format("Остановка потока на рейде %s",raid));
+        logger.info(String.format("Остановка потока на причалах %s",berths));
+        endProcessPort = System.currentTimeMillis();
         logger.info("Остановка процесса в порту");
     }
 
@@ -91,9 +87,5 @@ public class PortService extends Thread {
                 berthService.getAllBerths().size());
     }
 
-    @SneakyThrows
-    @Override
-    public void run() {
-        processPort();
-    }
+
 }

@@ -20,7 +20,6 @@ public class Raid extends ApplicationEvent {
     private boolean  isFreeRaid;
 
 
-
     public Raid(int raidCapacity, boolean  isFreeRaid) {
         super(isFreeRaid);
         this.raidCapacity = raidCapacity;
@@ -37,4 +36,7 @@ public class Raid extends ApplicationEvent {
         return isFreeRaid;
     }
 
+    public List<Ship> getShipsRaid() {
+        return shipsRaid == null ? null : shipsRaid;
+    }
 }
