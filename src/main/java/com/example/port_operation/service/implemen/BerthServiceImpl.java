@@ -11,6 +11,7 @@ import com.example.port_operation.service.interfaces.RaidService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,14 +52,14 @@ public class BerthServiceImpl implements BerthService {
         };
 
     }
-
+    @NotNull
     @Override
     public List<Berth> getAllBerths() {
         return Arrays.stream(berths).collect(Collectors.toList());
     }
 
     public void processBerth(Berth berth, Ship ship) throws ExecutionException, InterruptedException {
-        logger.info(String.format("Пришвартовался на причал %s для корабль %s для выгрузки",
+        logger.info(String.format("Пришвартовался на причал %s для выгрузки корабль %s",
                 berth.getTypeCargo().getType(), ship));
         berth.setFreeBerth(false);
         raidService.removeShipByRaid(ship);
@@ -67,22 +68,26 @@ public class BerthServiceImpl implements BerthService {
         processThreads(shipUnload, berth);
     }
 
+    @Override
+    public boolean isFreeBerth(Berth berth) {
+        return berth.isFreeBerth();
+    }
 
 
-    public Berth processBerth(Ship ship) {
-        Berth berth = raidService.getShipsRaid().stream()
+    public Optional<Berth> processBerth(Ship ship) {
+        Optional<Berth> optional = raidService.getShipsRaid().stream()
                 .map(Ship::getCargo)
                 .map(t -> {
                     return Arrays.stream(getBerths())
                             .filter(b -> b.getTypeCargo().getId() == t.getId())
                             .filter(b -> b.getShipUnload() == null)
-                            .findAny().orElse(null);
-                }).findAny().orElse(null);
-        if (berth != null && ship.getAmountCargo() != 0) {
-            logger.info(String.format("Выбран причал %s для выгрузки корабля %d", berth, ship.getId()));
-            return berth;
+                            .findAny();
+                })
+                .findAny().orElse(null);
+        if (optional != null && ship.getAmountCargo() != 0) {
+            logger.info(String.format("Выбран причал %s для выгрузки корабля %d", optional.orElse(null), ship.getId()));
         }
-        return null;
+        return optional;
     }
 
     private void processThreads(ShipUnload shipUnload, Berth berth) throws ExecutionException, InterruptedException {
@@ -121,7 +126,7 @@ public class BerthServiceImpl implements BerthService {
         while (isBerthsRun) {
             if (raidService.getRaid() != null){
                 processBerths(raidService.getRaid());
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             }
         }
     }
@@ -129,6 +134,7 @@ public class BerthServiceImpl implements BerthService {
     @SneakyThrows
     @Override
     public void onApplicationEvent(@NotNull Raid raid) {
+        logger.info(String.format("На причальном сервисе Услышали событие на рейде %s",raid));
         Lock lock = new ReentrantLock();
         lock.lock();
         try {
@@ -138,12 +144,18 @@ public class BerthServiceImpl implements BerthService {
         }
     }
 
-    private void processBerths(@NotNull Raid raid) throws ExecutionException, InterruptedException {
-        Berth berth;
-        for (Ship ship: raid.getShipsRaid()){
-            berth = processBerth(ship);
-            if (berth != null) {
-                processBerth(berth, ship);
+    private void processBerths(@NotNull Raid raid){
+        Optional<Berth> optionalBerth;
+        for (Ship ship : raid.getShipsRaid()) {
+            optionalBerth = processBerth(ship);
+            if (optionalBerth.isPresent()){
+                optionalBerth.ifPresent(berth -> {
+                    try {
+                        processBerth(berth, ship);
+                    } catch (ExecutionException | InterruptedException e) {
+                        logger.error(e);
+                    }
+                });
             }
         }
     }

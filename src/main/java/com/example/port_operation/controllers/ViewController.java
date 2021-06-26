@@ -48,7 +48,7 @@ public class ViewController {
     }
 
     @GetMapping("stop")
-    public String stop(Model model) throws InterruptedException {
+    public String stop(Model model) {
         portService.stopProcessPort();
         model.addAttribute("msg", "Процесс остановлен");
         return "index";
@@ -61,7 +61,7 @@ public class ViewController {
         return "index";
     }
     @GetMapping("process")
-    public String getProcess(Model model) {
+    public String getProcess(Model model) throws InterruptedException {
         List<Ship>ships = portService.getAllShipsByRaid();
         List<Berth>berths = portService.getAllBerths();
 
@@ -70,6 +70,10 @@ public class ViewController {
         return "process";
     }
 
+    @GetMapping("index")
+    public String getIndex() {
+        return "index";
+    }
 
     private String processController(Model model) throws ExecutionException, InterruptedException {
         if (raidCapacity == 0 && unloadingSpeed == 0) {

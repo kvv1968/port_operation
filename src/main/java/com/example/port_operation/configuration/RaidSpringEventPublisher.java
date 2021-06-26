@@ -26,9 +26,9 @@ public class RaidSpringEventPublisher {
             applicationEventPublisher.publishEvent(raid);
         } else if (!isFreeRaid) {
             log.info(String.format("Не опубликовано событие по Raid - рейд свободен %s", isFreeRaid));
-        } else  if (size > 0){
-            log.info(String.format("Опубликовано событие по Raid - на рейде появились корабли %s", raid.getShipsRaid()));
-            applicationEventPublisher.publishEvent(raid);
+//        } else  if (size > 0){
+//            log.info(String.format("Опубликовано событие по Raid - на рейде появились корабли %s", raid.getShipsRaid()));
+//            applicationEventPublisher.publishEvent(raid);
         }else {
             log.info(String.format("Не опубликовано событие по Raid -  количество кораблей = вместимости рейда  %s",
                     raid.getShipsRaid().size()));

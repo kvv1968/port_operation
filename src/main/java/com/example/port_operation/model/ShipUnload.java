@@ -20,11 +20,12 @@ public class ShipUnload implements Callable<Thread> {
 
     @Override
     public Thread call() {
+        Thread thread = Thread.currentThread();
         long startTime = System.currentTimeMillis();
         Commons.calculate(ship.getAmountCargo() / 2);
         long endTime = System.currentTimeMillis();
         time += endTime - startTime;
-        return Thread.currentThread();
+        return thread;
     }
 
 

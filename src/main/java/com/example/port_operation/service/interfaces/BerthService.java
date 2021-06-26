@@ -13,6 +13,6 @@ public interface BerthService extends ApplicationListener<Raid>, Runnable {
     List<ShipUnload> shipUnloadReports();
     Berth[] getBerths();
     void processBerth(Berth berth, Ship ship) throws ExecutionException, InterruptedException;
-    boolean isBerthsRun();
     void setBerthsRun(boolean berthsRun);
+    boolean isFreeBerth(Berth berth);
 }
