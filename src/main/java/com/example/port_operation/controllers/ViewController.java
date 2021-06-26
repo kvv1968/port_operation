@@ -7,6 +7,7 @@ import com.example.port_operation.model.Ship;
 import com.example.port_operation.model.ShipUnload;
 import com.example.port_operation.service.implemen.PortService;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -42,7 +43,7 @@ public class ViewController {
     }
 
     @GetMapping("start")
-    public String start(Model model) throws InterruptedException {
+    public String start(Model model) throws InterruptedException, ExecutionException {
         return processController(model);
     }
 
@@ -63,16 +64,14 @@ public class ViewController {
     public String getProcess(Model model) {
         List<Ship>ships = portService.getAllShipsByRaid();
         List<Berth>berths = portService.getAllBerths();
-        if (ships == null || berths == null){
-            return "redirect:/";
-        }
+
         model.addAttribute("ships", ships);
         model.addAttribute("berths", berths);
         return "process";
     }
 
 
-    private String processController(Model model){
+    private String processController(Model model) throws ExecutionException, InterruptedException {
         if (raidCapacity == 0 && unloadingSpeed == 0) {
             model.addAttribute("msgg", "Перед запуском нужно настроить приложение");
             return "settings";
@@ -80,7 +79,7 @@ public class ViewController {
         portService.setRaidCapacity(raidCapacity);
         String msg = "Процесс запущен...";
         model.addAttribute("msg", msg);
-        portService.start();
+        portService.processPort();
         return "index";
     }
 

@@ -8,12 +8,10 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @Table(name = "typecargo")
 public class TypeCargo {
@@ -46,5 +44,13 @@ public class TypeCargo {
     @Override
     public int hashCode() {
         return Objects.hash(id, type);
+    }
+
+    @Override
+    public String toString() {
+        return "TypeCargo{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                '}';
     }
 }
