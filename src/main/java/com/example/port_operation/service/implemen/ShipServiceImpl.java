@@ -59,7 +59,7 @@ public class ShipServiceImpl implements ShipService {
     public Ship  shipGeneration(){
         Random random = new Random();
         TypeCargo typeCargo = cargoRepository.findTypeCargoById(random.nextInt(3) + 1);
-        int amount = random.nextInt(Integer.MAX_VALUE);
+        int amount = random.nextInt(200_000_000);
         Ship ship = new Ship(typeCargo, amount);
         logger.info(String.format("Сгенерировали новый корабль %s", ship));
         return updateShip(ship);

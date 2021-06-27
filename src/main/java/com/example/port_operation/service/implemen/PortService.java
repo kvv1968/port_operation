@@ -1,6 +1,5 @@
 package com.example.port_operation.service.implemen;
 
-import com.example.port_operation.configuration.BerthSpringEventPublisher;
 import com.example.port_operation.configuration.RaidSpringEventPublisher;
 import com.example.port_operation.model.Berth;
 import com.example.port_operation.model.Raid;
@@ -10,32 +9,32 @@ import com.example.port_operation.model.ShipUnload;
 import com.example.port_operation.service.interfaces.BerthService;
 import com.example.port_operation.service.interfaces.RaidService;
 import java.util.List;
-import lombok.Data;
-import lombok.SneakyThrows;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 @Service
-@Data
-public class PortService implements ApplicationListener<Raid> {
+@Getter
+@Setter
+public class PortService {
     private final Log logger = LogFactory.getLog(PortService.class);
     private int raidCapacity;
-    private int unloadingSpeed;
 
     private RaidService raidService;
     private BerthService berthService;
     private Raid raid;
+    private Berth[] berths;
     private long startProcessPort;
     private long endProcessPort;
     private boolean isRun = true;
-
+    private ExecutorService executorService;
     @Autowired
-    private ApplicationContext applicationContext;
+    private RaidSpringEventPublisher raidEventPublisher;
 
     public PortService(RaidService raidService,
                        BerthService berthService) {
@@ -56,43 +55,37 @@ public class PortService implements ApplicationListener<Raid> {
         return berthService.shipUnloadReports();
     }
 
-    public void processPort() throws InterruptedException {
+    public void processPort(){
         logger.info("Запуск процесса в порту");
-        RaidSpringEventPublisher raidSpringEventPublisher = applicationContext.getBean(RaidSpringEventPublisher.class);
-        BerthSpringEventPublisher berthSpringEventPublisher = applicationContext.getBean(BerthSpringEventPublisher.class);
         startProcessPort = System.currentTimeMillis();
         raidService.deleteAllRepoShips();
-        berthService.setUnloadingSpeed(unloadingSpeed);
-        process(raidSpringEventPublisher, berthSpringEventPublisher);
+        raid = new Raid(raidCapacity, true);
+        raidService.setRaid(raid);
+        berths = berthService.getBerths();
+        raidService.setRunRaid(true);
+        berthService.setBerthsRun(true);
+
+        executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(raidService);
+        executorService.execute(berthService);
     }
 
-    private void process(RaidSpringEventPublisher raidSpringEventPublisher,
-                         BerthSpringEventPublisher berthSpringEventPublisher) throws InterruptedException {
-        while (isRun){
-            raidSpringEventPublisher.publishRaidEvent(raidCapacity);
-            Thread.sleep(5000);
-            berthSpringEventPublisher.publishBerthEvent(true);
-            Thread.sleep(2000);
-        }
-    }
 
-    public void stopProcessPort(){
-        isRun = false;
+    public void stopProcessPort()  {
+        raidService.setRunRaid(false);
+        berthService.setBerthsRun(false);
+        logger.info("Устанавливаем вместимость рейда на 0");
+        executorService.shutdown();
+        logger.info(String.format("Остановка потока на рейде %s",raid));
+        logger.info(String.format("Остановка потока на причалах %s",berths));
         endProcessPort = System.currentTimeMillis();
         logger.info("Остановка процесса в порту");
     }
 
     public ReportPort getReport() {
-        return new ReportPort(raidCapacity, unloadingSpeed,
-                raidService.getCount(), berthService.shipUnloadReports().size(), String.valueOf(endProcessPort - startProcessPort),
+        return new ReportPort(raidCapacity, raidService.getCount(), berthService.shipUnloadReports().size(), String.valueOf(endProcessPort - startProcessPort),
                 berthService.getAllBerths().size());
     }
 
-    @SneakyThrows
-    @Override
-    public void onApplicationEvent(@NotNull Raid raid) {
-        for (Berth berth:getAllBerths()){
-            berthService.processBerth(berth, raid);
-        }
-    }
+
 }

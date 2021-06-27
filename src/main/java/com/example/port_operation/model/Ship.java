@@ -12,12 +12,10 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @Entity
 @Table(name = "ship")
@@ -40,5 +38,14 @@ public class Ship{
 
     public synchronized int getAmountCargo() {
         return amountCargo;
+    }
+
+    @Override
+    public String toString() {
+        return "Ship{" +
+                "id=" + id +
+                ", cargo=" + cargo +
+                ", amountCargo=" + amountCargo +
+                '}';
     }
 }

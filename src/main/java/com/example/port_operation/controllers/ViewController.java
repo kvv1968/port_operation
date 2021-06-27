@@ -7,6 +7,7 @@ import com.example.port_operation.model.Ship;
 import com.example.port_operation.model.ShipUnload;
 import com.example.port_operation.service.implemen.PortService;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -42,7 +43,7 @@ public class ViewController {
     }
 
     @GetMapping("start")
-    public String start(Model model) throws InterruptedException {
+    public String start(Model model) throws InterruptedException, ExecutionException {
         return processController(model);
     }
 
@@ -56,33 +57,33 @@ public class ViewController {
     @GetMapping("settings/param")
     public String getRequestSetting(RequestSetting request, Model model) {
         raidCapacity = request.getRaidCapacity();
-        unloadingSpeed = request.getUnloadingSpeed();
         model.addAttribute("request", request);
         return "index";
     }
     @GetMapping("process")
-    public String getProcess(Model model) {
+    public String getProcess(Model model) throws InterruptedException {
         List<Ship>ships = portService.getAllShipsByRaid();
         List<Berth>berths = portService.getAllBerths();
-        if (ships == null || berths == null){
-            return "redirect:/";
-        }
+
         model.addAttribute("ships", ships);
         model.addAttribute("berths", berths);
         return "process";
     }
 
+    @GetMapping("index")
+    public String getIndex() {
+        return "index";
+    }
 
-    private String processController(Model model) throws InterruptedException {
+    private String processController(Model model) throws ExecutionException, InterruptedException {
         if (raidCapacity == 0 && unloadingSpeed == 0) {
-            model.addAttribute("msg", "Перед запуском нужно настроить приложение");
+            model.addAttribute("msgg", "Перед запуском нужно настроить приложение");
             return "settings";
         }
         portService.setRaidCapacity(raidCapacity);
-        portService.setUnloadingSpeed(unloadingSpeed);
-        portService.processPort();
         String msg = "Процесс запущен...";
         model.addAttribute("msg", msg);
+        portService.processPort();
         return "index";
     }
 

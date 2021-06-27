@@ -17,13 +17,12 @@
 </head>
 <body>
 
-<div class="raid" style="width: 500px;">
+<div class="raid" style="width:auto;">
     <H3>Отчет о работе Порта</H3>
     <ul th:object="${report}">
         <li th:text="'Время работы порта - ' + ${report.portOpeningHours}"></li>
         <li th:text="'Вместимость рейда - ' + ${report.raidCapacity}"></li>
         <li th:text="'Количество причалов - ' + ${report.numberBerths}"></li>
-        <li th:text="'Скорость выгрузки на причале - ' + ${report.unloadingSpeed}"></li>
         <li th:text="'Количество кораблей прошедших через рейд - ' + ${report.numberShipsEnteredRaid}"></li>
         <li th:text="'Количество выгруженных кораблей - ' + ${report.numberUnloadedShips}"></li>
     </ul>
