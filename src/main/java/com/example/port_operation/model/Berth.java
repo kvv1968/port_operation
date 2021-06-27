@@ -15,8 +15,9 @@ public class Berth extends ApplicationEvent  {
     private ShipUnload shipUnload;
     private boolean isFreeBerth;
     private String threadNames;
-    private static long indicator;
+    private  int indicator;
     private long  shipId;
+    private int amountMax;
 
 
     public Berth(TypeCargo typeCargo, boolean isFreeBerth) {
@@ -40,8 +41,12 @@ public class Berth extends ApplicationEvent  {
                 '}';
     }
 
-    public static long getIndicator() {
-        return ShipUnload.indicator;
+    public int getIndicator() {
+        int i = 0;
+        if (shipUnload != null){
+            i = shipUnload.getIndicator() != null ? shipUnload.getIndicator().get() : 0;
+        }
+        return i;
     }
 
     public long getShipId() {
@@ -50,5 +55,13 @@ public class Berth extends ApplicationEvent  {
             id = shipUnload.getShip().getId();
         }
         return id;
+    }
+
+    public int getAmountMax() {
+        int amount = 0;
+        if (shipUnload != null){
+            amount = shipUnload.getShip().getAmountCargo();
+        }
+        return amount;
     }
 }

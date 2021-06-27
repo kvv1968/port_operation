@@ -38,6 +38,6 @@ public class Raid extends ApplicationEvent {
     }
 
     public List<Ship> getShipsRaid() {
-        return shipsRaid == null ? null : shipsRaid;
+        return shipsRaid;
     }
 }

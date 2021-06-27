@@ -56,14 +56,14 @@
                 <th scope="col" th:text="${berth.typeCargo.getType()}">0</th>
                 <th scope="col" th:text="${berth.getThreadNames()}">0</th>
                 <th scope="col" th:text="${berth.getShipId()}">0</th>
-                <!--                <th scope="col"><meter id="fuel"-->
-                <!--                                       min="0" max="2000000"-->
-                <!--                                       low="533" high="66" optimum="180"-->
-                <!--                                       th:text="${berth.getIndicator()}">-->
-                <!--                </meter></th>-->
-                <th scope="col">
-                    <progress max="" th:text="${berth.getIndicator()}"> 0</progress>
-                </th>
+                                <th scope="col"><meter
+                                                       min="0" th:max="${berth.getAmountMax()}"
+                                                       low="533" high="66" optimum="180"
+                                                       th:value="${berth.getIndicator()}" >
+                                </meter></th>
+<!--                <th scope="col">-->
+<!--                    <progress th:min="${0}" th:max="${2000000000}" th:text="${berth.getIndicator()}"> 0</progress>-->
+<!--                </th>-->
             </tr>
             </tbody>
         </table>
