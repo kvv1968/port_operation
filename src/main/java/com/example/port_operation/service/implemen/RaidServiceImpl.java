@@ -66,8 +66,11 @@ public class RaidServiceImpl implements RaidService {
     @SneakyThrows
     @Override
     public void onApplicationEvent(@NotNull Raid raid) {
-        logger.info(String.format("На рейдерном сервиса Услышали событие на рейде %s",raid));
-        processingRaid();
+        if (!raid.getShipsRaid().isEmpty()) {
+            logger.info(String.format("На рейдерном сервиса Услышали событие на рейде %s", raid));
+            processingRaid();
+        }
+        logger.info(String.format("На рейде нет кораблей %s", raid.getShipsRaid().size()));
     }
 
     private void processingRaid()  {
