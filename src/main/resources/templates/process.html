@@ -46,7 +46,7 @@
             <thead>
             <tr>
                 <th scope="col">Тип причала</th>
-                <th scope="col">ID выгружающих потоков</th>
+<!--                <th scope="col">ID выгружающих потоков</th>-->
                 <th scope="col">ID Корабля</th>
                 <th scope="col">Процесс выгрузки груза</th>
             </tr>
@@ -54,7 +54,7 @@
             <tbody>
             <tr th:each="berth : ${berths}">
                 <th scope="col" th:text="${berth.typeCargo.getType()}">0</th>
-                <th scope="col" th:text="${berth.getThreadNames()}">0</th>
+<!--                <th scope="col" th:text="${berth.getThreadNames()}">0</th>-->
                 <th scope="col" th:text="${berth.getShipId()}">0</th>
                                 <th scope="col"><meter
                                                        min="0" th:max="${berth.getAmountMax()}"
